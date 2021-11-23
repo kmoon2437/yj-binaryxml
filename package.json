@@ -1,7 +1,7 @@
 {
   "name": "zxe-binaryxml",
-  "version": "0.0.0-arisa0",
-  "description": "Binary XML file converter",
+  "version": "0.0.1-arisa0",
+  "description": "Binary XML file converter(It's my own format.)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
