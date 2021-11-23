@@ -1,0 +1,50 @@
+파일 구조
+참고: 텍스트 데이터는 원칙적으로 아래와 같이 저장된다.
+텍스트 데이터 {
+    길이: big-endian의 부호 없는 가변 길이 정수다.
+    내용: 대부분 utf-8 인코딩이다
+}
+
+signature: 8바이트. 카스아리는 찐이다
+file format version: 2바이트. 대부분 00 00이다
+declaration: <?xml ~~~ ?>의 내용 {
+    attributes: 속성 리스트 {
+        start of attributes: 1바이트
+        attribute: 태그의 속성 {
+            key: 텍스트
+            value: 텍스트
+        }
+        attribute
+        attribute
+        end of attributes: 1바이트
+    }
+    ......(대부분 version,encoding,standalone 3개이거나 standalone이 없다)
+    end of declaration: 1바이트
+}
+elements: 요소(태그)들 {
+    start of elements: 1바이트
+    element: 각각의 요소 {
+        start of element: 1바이트
+        element type: 1바이트. 요소의 종류이며 요소(태그),텍스트,처리명령,cdata가 있다
+        
+        // element type이 element일 경우 들어가는 것들
+        tag name: 텍스트
+        attributes
+        elements
+        
+        // element type이 text 또는 cdata일 경우 들어가는 것들
+        text: 그저 텍스트 데이터
+        
+        // element type이 pi(processing instruction)일 경우 들어가는 것들
+        name: 이름. 'xml'이나 'XML'일 경우 declaration이 되므로 이 외의 값만 들어갈 수 있음
+        content: 텍스트
+        
+        // 공통
+        end of element: 1바이트
+    }
+    element
+    element
+    element
+    ......
+    end of elements: 1바이트
+}

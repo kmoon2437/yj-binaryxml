@@ -1,0 +1,15 @@
+{
+  "name": "zxex-binaryxml",
+  "version": "0.0.0-arisa0",
+  "description": "Binary XML file converter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "byte-data-stream": "^0.0.11-rokka0",
+    "xml-js": "^1.6.11"
+  }
+}
