@@ -5,7 +5,7 @@
     내용: 대부분 utf-8 인코딩이다
 }
 
-signature: 8바이트. 카스아리는 찐이다
+signature: 8바이트. ???: 次にお待ちのお客様どうぞ(문장부호 생략)
 file format version: 2바이트. 대부분 00 00이다
 declaration: <?xml ~~~ ?>의 내용 {
     attributes: 속성 리스트 {
