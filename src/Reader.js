@@ -2,8 +2,9 @@ const Consts = require('./Consts');
 const { ByteStream } = require('byte-data-stream');
 
 module.exports = class Reader{
-    constructor(buf){
+    constructor(buf,opts){
         this.bs = new ByteStream(buf);
+        this.opts = opts;
     }
     
     read_document(){
@@ -41,6 +42,54 @@ module.exports = class Reader{
         this.read_attributes(decl);
     }
     
+    read_value(){
+        const type = this.bs.read_uint8();
+        let val = null;
+        switch(type){
+            case Consts.value_types.NULL: val = null; break;
+            case Consts.value_types.TEXT: val = this.read_text(); break;
+            case Consts.value_types.BINARY_DATA:
+                val = Uint8Array.from(this.bs.read_bytes(this.bs.read_var_uint()));
+            break;
+            case Consts.value_types.BYTE: val = this.bs.read_int8(); break;
+            case Consts.value_types.SHORT: val = this.bs.read_int16(); break;
+            case Consts.value_types.INT: val = this.bs.read_int32(); break;
+            case Consts.value_types.LONG:
+                val = this.bs.read_big_int64();
+                if(!this.opts.use_bigint) val = Number(val);
+            break;
+            case Consts.value_types.FLOAT: val = this.bs.read_float32(); break;
+            case Consts.value_types.DOUBLE: val = this.bs.read_float64(); break;
+            case Consts.value_types.BOOLEAN: val = !!this.bs.read_uint8(); break;
+            case Consts.value_types.TIMESTAMP:
+                let tr = this.bs.read_uint8();
+                let time = this.bs.read_big_int64();
+                switch(tr){
+                    case Consts.time_resolution.SECONDS: time *= 1000n; break;
+                    case Consts.time_resolution.MILLISECONDS: break;
+                    case Consts.time_resolution.MICROSECONDS: time /= 1000n; break;
+                    case Consts.time_resolution.NANOSECONDS: time /= 1000000n; break;
+                }
+                val = new Date(Number(time));
+            break;
+        }
+        //console.log(typeof val,val)
+        
+        if(!this.opts.use_value_type){
+            if(val === null) return null;
+            switch(typeof val){
+                case 'undefined': return null;
+                case 'object':{
+                    if(val instanceof Uint8Array) return Buffer.from(val).toString('base64');
+                    else if(val instanceof Date) return val.toJSON();
+                    else return val.toString();
+                }
+                default: return val.toString();
+            }
+        }
+        return val;
+    }
+    
     read_attributes(el){
         if(this.bs.read_uint8() != Consts.START_OF_ATTRIBUTES){
             this.bs.i--;
@@ -48,7 +97,7 @@ module.exports = class Reader{
         }
         while(this.bs.read_uint8() != Consts.END_OF_ATTRIBUTES){
             let key = this.read_text();
-            let val = this.read_text();
+            let val = this.read_value();
             if(!el.attributes) el.attributes = {};
             el.attributes[key] = val;
         }
@@ -78,6 +127,14 @@ module.exports = class Reader{
                 el.type = 'instruction';
                 el.name = this.read_text();
                 el.instruction = this.read_text();
+            }else if(type == Consts.types.VALUE){
+                el.type = this.opts.use_value_type ? 'value' : 'text';
+                let val = this.read_value();
+                if(this.opts.use_value_type) el.value = val;
+                else el.text = val;
+            }else if(type == Consts.types.DOCTYPE){
+                el.type = 'doctype';
+                el.doctype = this.read_text();
             }
             if(!doc.elements) doc.elements = [];
             doc.elements.push(el);

@@ -1,18 +1,40 @@
-파일 구조
-참고: 텍스트 데이터는 원칙적으로 아래와 같이 저장된다.
-텍스트 데이터 {
-    길이: big-endian의 부호 없는 가변 길이 정수다.
+데이터 타입
+null: 말그대로 null
+텍스트 {
+    길이: big-endian의 부호 없는 가변 길이 정수
     내용: 대부분 utf-8 인코딩이다
 }
+binary data {
+    길이: big-endian의 부호 없는 가변 길이 정수
+    내용물: 그저 byte의 나열
+}
+// 부호 없는 정수는 없다
+바이트(byte): big-endian의 부호 있는 1바이트 정수
+짧은 거(short): big-endian의 부호 있는 2바이트 정수
+정수(int): big-endian의 부호 있는 4바이트 정수
+긴 거(long): big-endian의 부호 있는 8바이트 정수
+떠다니는 거(float): big-endian의 4바이트 부동 소수점
+2배(double): big-endian의 8바이트 부동 소수점
+boolean: 0이면 false, 아니면 true
+timestamp: 시간 {
+    resolution: 1바이트. 시간의 해상도를 의미하며, 초~나노초까지 있음
+    value: big-endian의 부호 있는 8바이트 정수
+}
 
-signature: 8바이트. ???: 次にお待ちのお客様どうぞ(문장부호 생략)
+파일 구조
+
+signature: 8바이트. 카스아리는 전설이다
 file format version: 2바이트. 대부분 00 00이다
 declaration: <?xml ~~~ ?>의 내용 {
     attributes: 속성 리스트 {
         start of attributes: 1바이트
         attribute: 태그의 속성 {
+            start of attribute: 1바이트
             key: 텍스트
-            value: 텍스트
+            data value: 정수/실수/문자열/boolean/시간 등 {
+                value type: 값의 타입. 텍스트 또는 정수 또는 실수 또는 binary data 등등등
+                value: 값
+            }
         }
         attribute
         attribute
@@ -32,12 +54,15 @@ elements: 요소(태그)들 {
         attributes
         elements
         
-        // element type이 text 또는 cdata일 경우 들어가는 것들
+        // element type이 text 또는 cdata 또는 doctype일 경우 들어가는 것들
         text: 그저 텍스트 데이터
         
         // element type이 pi(processing instruction)일 경우 들어가는 것들
-        name: 이름. 'xml'이나 'XML'일 경우 declaration이 되므로 이 외의 값만 들어갈 수 있음
+        name: 이름. 'xml'(대소문자 무관)일 경우 declaration이 되므로 이 외의 값만 들어갈 수 있음
         content: 텍스트
+        
+        // element type이 value일 경우 들어가는 것들
+        data value
         
         // 공통
         end of element: 1바이트
