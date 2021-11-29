@@ -21,8 +21,9 @@ module.exports = class Reader{
     verify_signature(){
         // 시그니처 안맞으면 퉤
         let sign = this.bs.read_bytes(Consts.KASUARI.length);
-        let tojson = JSON.stringify;
-        if(tojson(sign) != tojson(Consts.KASUARI)) throw new TypeError('bad signature bytes. I want kasuari');
+        if(!Consts.KASUARI.every((e,i,a) => sign[i] == a[i])){
+            throw new TypeError('bad signature bytes. I want kasuari');
+        }
     }
     
     read_text(){
