@@ -11,5 +11,17 @@
   "dependencies": {
     "byte-data-stream": "^0.1.1-rokka0",
     "xml-js": "^1.6.11"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmoon2437/zxe-binaryxml.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kmoon2437/zxe-binaryxml/issues"
+  },
+  "homepage": "https://github.com/kmoon2437/zxe-binaryxml#readme"
 }
