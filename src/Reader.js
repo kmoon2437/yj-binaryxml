@@ -11,7 +11,11 @@ module.exports = class Reader{
         let doc = {};
 
         this.verify_signature();
-        this.read_version(doc);
+        this.verify_version(doc);
+
+        // 조만간 구현 예정
+        let compress = this.read_compress();
+
         this.read_declaration(doc);
         this.read_elements(doc);
 
@@ -34,8 +38,13 @@ module.exports = class Reader{
         return s;
     }
     
-    read_version(doc){
+    verify_version(doc){
         doc.bxml_version = this.bs.read_uint16();
+        if(doc.bxml_version >= Consts.VERSION) throw new Error("Outdated parser (please update the package.)");
+    }
+
+    read_compress(){
+        return this.bs.read_uint16();
     }
     
     read_declaration(doc){

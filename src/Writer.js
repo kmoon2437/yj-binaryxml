@@ -18,6 +18,11 @@ module.exports = class Writer{
         
         // version
         this.bs.write_uint16(Consts.VERSION);
+
+        // 압축알고리즘 종류
+        // 아직 구현을 안했으므로 RAW(압축 안함)로 설정
+        // 추후 deflate(zip),gz,xz 등등등 추가예정
+        this.bs.write_uint16(Consts.compress.RAW);
         
         // content
         this.write_declaration(xml.declaration.attributes);
