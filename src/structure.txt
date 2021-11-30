@@ -8,7 +8,7 @@ binary data {
     길이: big-endian의 부호 없는 가변 길이 정수
     내용물: 그저 byte의 나열
 }
-// 부호 없는 정수는 없다
+// 각각의 정수 타입은 unsigned(부호 없음)의 형태로도 사용 가능
 바이트(byte): big-endian의 부호 있는 1바이트 정수
 짧은 거(short): big-endian의 부호 있는 2바이트 정수
 정수(int): big-endian의 부호 있는 4바이트 정수
@@ -19,6 +19,10 @@ boolean: 0이면 false, 아니면 true
 timestamp: 시간 {
     resolution: 1바이트. 시간의 해상도를 의미하며, 초~나노초까지 있음
     value: big-endian의 부호 있는 8바이트 정수
+}
+array: 말그대로 배열. 배열을 포함해 저기 있는 모든 타입을 담을 수 있음 {
+    길이: big-endian의 부호 없는 가변 길이 정수
+    내용물
 }
 
 파일 구조

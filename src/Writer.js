@@ -1,13 +1,15 @@
 const Consts = require('./Consts');
-const { ByteStream } = require('byte-data-stream');
+const { ByteStream,ByteStreamSimulator } = require('byte-data-stream');
 
 function is_range(num,min,max){
     return min <= num && num <= max;
 }
 
 module.exports = class Writer{
-    constructor(initial_length){
-        this.bs = new ByteStream(new ArrayBuffer(initial_length));
+    constructor(initial_length,simulate = false){
+        this.bs = simulate
+        ? new ByteStreamSimulator()
+        : new ByteStream(new ArrayBuffer(initial_length));
     }
     
     write_document(xml){
@@ -62,22 +64,43 @@ module.exports = class Writer{
                     this.bs.write_uint8(Consts.value_types.BINARY_DATA);
                     this.bs.write_var_uint(b.byteLength);
                     this.bs.write_bytes([...new Uint8Array(b)]);
-                }else throw new TypeError('object valud must be an instance of Date or Uint8Array or nodejs Buffer or ArrayBuffer');
+                }else if(val instanceof Array){
+                    this.bs.write_uint8(Consts.value_types.ARRAY);
+                    this.bs.write_var_uint(val.length);
+                    val.forEach(a => this.write_value(a));
+                }else throw new TypeError('object value must be an instance of Array or Date or Uint8Array or ArrayBuffer or nodejs Buffer');
             break;
             case 'number':
+                // 그냥 숫자가 들어오면 숫자 크기에 따라 타입을 자동으로 설정
                 if(Number.isInteger(val)){
-                    if(is_range(val,-128,127)){
-                        this.bs.write_uint8(Consts.value_types.BYTE);
-                        this.bs.write_int8(val);
-                    }else if(is_range(val,-32768,32767)){
-                        this.bs.write_uint8(Consts.value_types.SHORT);
-                        this.bs.write_int16(val);
-                    }else if(is_range(val,-2147483648,2147483647)){
-                        this.bs.write_uint8(Consts.value_types.INT);
-                        this.bs.write_int32(val);
+                    if(val >= 0){ // 양수는 unsigned로 저장
+                        if(val < 256){
+                            this.bs.write_uint8(Consts.value_types.UNSIGNED_BYTE);
+                            this.bs.write_uint8(val);
+                        }else if(val < 65536){
+                            this.bs.write_uint8(Consts.value_types.UNSIGNED_SHORT);
+                            this.bs.write_uint16(val);
+                        }else if(val < 4294967296){
+                            this.bs.write_uint8(Consts.value_types.UNSIGNED_INT);
+                            this.bs.write_uint32(val);
+                        }else{
+                            this.bs.write_uint8(Consts.value_types.UNSIGNED_LONG);
+                            this.bs.write_big_uint64(BigInt(val));
+                        }
                     }else{
-                        this.bs.write_uint8(Consts.value_types.LONG);
-                        this.bs.write_big_int64(BigInt(val));
+                        if(is_range(val,-128,127)){
+                            this.bs.write_uint8(Consts.value_types.BYTE);
+                            this.bs.write_int8(val);
+                        }else if(is_range(val,-32768,32767)){
+                            this.bs.write_uint8(Consts.value_types.SHORT);
+                            this.bs.write_int16(val);
+                        }else if(is_range(val,-2147483648,2147483647)){
+                            this.bs.write_uint8(Consts.value_types.INT);
+                            this.bs.write_int32(val);
+                        }else{
+                            this.bs.write_uint8(Consts.value_types.LONG);
+                            this.bs.write_big_int64(BigInt(val));
+                        }
                     }
                 }else{
                     this.bs.write_uint8(Consts.value_types.DOUBLE);
@@ -85,18 +108,34 @@ module.exports = class Writer{
                 }
             break;
             case 'bigint':
-                if(is_range(val,-128n,127n)){
-                    this.bs.write_uint8(Consts.value_types.BYTE);
-                    this.bs.write_int8(Number(val));
-                }else if(is_range(val,-32768n,32767n)){
-                    this.bs.write_uint8(Consts.value_types.SHORT);
-                    this.bs.write_int16(Number(val));
-                }else if(is_range(val,-2147483648n,2147483647n)){
-                    this.bs.write_uint8(Consts.value_types.INT);
-                    this.bs.write_int32(Number(val));
+                if(val >= 0n){
+                    if(val < 256n){
+                        this.bs.write_uint8(Consts.value_types.UNSIGNED_BYTE);
+                        this.bs.write_uint8(Number(val));
+                    }else if(val < 65536n){
+                        this.bs.write_uint8(Consts.value_types.UNSIGNED_SHORT);
+                        this.bs.write_uint16(Number(val));
+                    }else if(val < 4294967296n){
+                        this.bs.write_uint8(Consts.value_types.UNSIGNED_INT);
+                        this.bs.write_uint32(Number(val));
+                    }else{
+                        this.bs.write_uint8(Consts.value_types.UNSIGNED_LONG);
+                        this.bs.write_big_uint64(val);
+                    }
                 }else{
-                    this.bs.write_uint8(Consts.value_types.LONG);
-                    this.bs.write_big_int64(val);
+                    if(is_range(val,-128n,127n)){
+                        this.bs.write_uint8(Consts.value_types.BYTE);
+                        this.bs.write_int8(Number(val));
+                    }else if(is_range(val,-32768n,32767n)){
+                        this.bs.write_uint8(Consts.value_types.SHORT);
+                        this.bs.write_int16(Number(val));
+                    }else if(is_range(val,-2147483648n,2147483647n)){
+                        this.bs.write_uint8(Consts.value_types.INT);
+                        this.bs.write_int32(Number(val));
+                    }else{
+                        this.bs.write_uint8(Consts.value_types.LONG);
+                        this.bs.write_big_int64(val);
+                    }
                 }
             break;
             case 'boolean':

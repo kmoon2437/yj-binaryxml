@@ -2,7 +2,6 @@ const xmljs = require('xml-js');
 const Consts = require('./Consts');
 const Reader = require('./Reader');
 const Writer = require('./Writer');
-const WriteSimulator = require('./WriteSimulator');
 
 module.exports = class BinaryXML{
     static from_xml_string(str){
@@ -11,7 +10,7 @@ module.exports = class BinaryXML{
     }
     
     static from_parsed_xml(xml){
-        let simulator = new WriteSimulator();
+        let simulator = new Writer(0,true);
         simulator.write_document(xml);
         let writer = new Writer(simulator.bs.length);
         writer.write_document(xml);

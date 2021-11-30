@@ -27,7 +27,12 @@ module.exports = {
         FLOAT:0x07,
         DOUBLE:0x08,
         BOOLEAN:0x09,
-        TIMESTAMP:0x10
+        TIMESTAMP:0x10,
+        ARRAY:0x11,
+        UNSIGNED_BYTE:0x12,
+        UNSIGNED_SHORT:0x13,
+        UNSIGNED_INT:0x14,
+        UNSIGNED_LONG:0x15
     },
     time_resolution:{
         SECONDS:0x00,

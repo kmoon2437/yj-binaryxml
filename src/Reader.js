@@ -60,6 +60,13 @@ module.exports = class Reader{
                 val = this.bs.read_big_int64();
                 if(!this.opts.use_bigint) val = Number(val);
             break;
+            case Consts.value_types.UNSIGNED_BYTE: val = this.bs.read_uint8(); break;
+            case Consts.value_types.UNSIGNED_SHORT: val = this.bs.read_uint16(); break;
+            case Consts.value_types.UNSIGNED_INT: val = this.bs.read_uint32(); break;
+            case Consts.value_types.UNSIGNED_LONG:
+                val = this.bs.read_big_uint64();
+                if(!this.opts.use_bigint) val = Number(val);
+            break;
             case Consts.value_types.FLOAT: val = this.bs.read_float32(); break;
             case Consts.value_types.DOUBLE: val = this.bs.read_float64(); break;
             case Consts.value_types.BOOLEAN: val = !!this.bs.read_uint8(); break;
@@ -73,6 +80,13 @@ module.exports = class Reader{
                     case Consts.time_resolution.NANOSECONDS: time /= 1000000n; break;
                 }
                 val = new Date(Number(time));
+            break;
+            case Consts.value_types.ARRAY:
+                val = [];
+                let len = this.bs.read_var_uint();
+                for(let i = 0;i < len;i++){
+                    val.push(this.read_value());
+                }
             break;
         }
         //console.log(typeof val,val)
