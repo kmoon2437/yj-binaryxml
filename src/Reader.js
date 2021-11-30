@@ -40,7 +40,10 @@ module.exports = class Reader{
     
     verify_version(doc){
         doc.bxml_version = this.bs.read_uint16();
-        if(doc.bxml_version >= Consts.VERSION) throw new Error("Outdated parser (please update the package.)");
+        // 난 왜 저걸 저렇게 입력했지?????????
+        //                   vvvv
+        //if(doc.bxml_version >= Consts.VERSION) throw new Error("....");
+        if(doc.bxml_version > Consts.VERSION) throw new Error("Outdated parser (please update the package.)");
     }
 
     read_compress(){
