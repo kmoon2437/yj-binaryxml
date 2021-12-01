@@ -68,6 +68,8 @@ module.exports = {
 
     // 압축(부호없는 16비트 정수)
     compress:{
-        RAW:0x0000 // 아무것도 안함
+        RAW:0x0000, // 아무것도 안함
+        DEFLATE:0x0001, // zip파일과 같은 방식
+        GZIP:0x0002 // gz파일과 같은 방식
     }
 };

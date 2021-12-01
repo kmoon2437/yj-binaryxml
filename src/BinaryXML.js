@@ -4,17 +4,16 @@ const Reader = require('./Reader');
 const Writer = require('./Writer');
 
 module.exports = class BinaryXML{
-    static from_xml_string(str){
+    static from_xml_string(str,opts){
         let xml = xmljs.xml2js(str,{ ignoreComment:true });
-        return this.from_parsed_xml(xml);
+        return this.from_parsed_xml(xml,opts);
     }
     
-    static from_parsed_xml(xml){
+    static from_parsed_xml(xml,opts = {}){
         let simulator = new Writer(0,true);
         simulator.write_document(xml);
         let writer = new Writer(simulator.bs.length);
-        writer.write_document(xml);
-        return writer.bs.buffer;
+        return writer.write_document(xml,opts).u8;
     }
     
     /*

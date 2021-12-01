@@ -13,6 +13,9 @@ binary data {
 짧은 거(short): big-endian의 부호 있는 2바이트 정수
 정수(int): big-endian의 부호 있는 4바이트 정수
 긴 거(long): big-endian의 부호 있는 8바이트 정수
+
+// 이 라이브러리에서는 float을 안 쓰지만
+// 혹시나 java나 c같은데서 쓸 수도 있기 때문에 만듬
 떠다니는 거(float): big-endian의 4바이트 부동 소수점
 2배(double): big-endian의 8바이트 부동 소수점
 boolean: 0이면 false, 아니면 true

@@ -1,3 +1,4 @@
+const zlib = require('zlib');
 const Consts = require('./Consts');
 const { ByteStream } = require('byte-data-stream');
 
@@ -13,8 +14,20 @@ module.exports = class Reader{
         this.verify_signature();
         this.verify_version(doc);
 
-        // 조만간 구현 예정
         let compress = this.read_compress();
+        let body = this.bs.read_bytes(this.bs.u8.byteLength-this.bs.i);
+
+        switch(compress){
+            case Consts.compress.RAW: break;
+            case Consts.compress.DEFLATE:
+                body = zlib.inflateRawSync(body);
+            break;
+            case Consts.compress.GZIP:
+                body = zlib.gunzipSync(body);
+            break;
+        }
+
+        this.bs = new ByteStream(body);
 
         this.read_declaration(doc);
         this.read_elements(doc);

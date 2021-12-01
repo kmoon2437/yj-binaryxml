@@ -1,9 +1,16 @@
+const zlib = require('zlib');
 const Consts = require('./Consts');
 const { ByteStream,ByteStreamSimulator } = require('byte-data-stream');
 
 function is_range(num,min,max){
     return min <= num && num <= max;
 }
+
+// 헤더 부분의 바이트 길이
+const HEADER_BYTES = Consts.KASUARI.length + 4;
+
+// 사용 가능한 압축 알고리즘 목록
+const AVAILABLE_COMPRESS_ALGOS = Object.values(Consts.compress);
 
 module.exports = class Writer{
     constructor(initial_length,simulate = false){
@@ -12,21 +19,48 @@ module.exports = class Writer{
         : new ByteStream(new ArrayBuffer(initial_length));
     }
     
-    write_document(xml){
-        // signature bytes
-        this.bs.write_bytes(Consts.KASUARI);
+    write_document(xml,opts){
+        opts = Object.assign({
+            compress:Consts.compress.RAW
+        },opts);
         
-        // version
-        this.bs.write_uint16(Consts.VERSION);
-
-        // 압축알고리즘 종류
-        // 아직 구현을 안했으므로 RAW(압축 안함)로 설정
-        // 추후 deflate(zip),gz,xz 등등등 추가예정
-        this.bs.write_uint16(Consts.compress.RAW);
-        
-        // content
+        // 일단 내용 먼저
         this.write_declaration(xml.declaration.attributes);
         this.write_elements(xml.elements);
+
+        // 길이 계산용이 아닌 실제 데이터를 쓰는 경우 최종 처리 후 반환
+        if(this.bs instanceof ByteStream) return this.finalize(opts.compress);
+    }
+    
+    finalize(compress){
+        // 압축
+        let body = this.bs.u8;
+        switch(compress){
+            case Consts.compress.RAW: break;
+            case Consts.compress.DEFLATE:
+                body = zlib.deflateRawSync(body);
+            break;
+            case Consts.compress.GZIP:
+                body = zlib.gzipSync(body);
+            break;
+            default: throw new TypeError('Invalid compression algorithm');
+        }
+
+        let bs = new ByteStream(new ArrayBuffer(HEADER_BYTES + body.byteLength));
+
+        // signature bytes
+        bs.write_bytes(Consts.KASUARI);
+
+        // version
+        bs.write_uint16(Consts.VERSION);
+
+        // 압축알고리즘 종류
+        bs.write_uint16(compress);
+
+        // 실제 데이터
+        bs.write_bytes(body);
+
+        return bs;
     }
     
     write_text(text){
@@ -34,7 +68,7 @@ module.exports = class Writer{
         // 원칙적으로 big endian의 var uint다
         let b = Buffer.from(text,'utf8');
         this.bs.write_var_uint(b.byteLength);
-        this.bs.write_bytes([...b]);
+        this.bs.write_bytes(b);
     }
     
     write_declaration(declaration){
