@@ -10,7 +10,7 @@ module.exports = class BinaryXML{
     
     static from_parsed_xml(xml,opts = {}){
         let simulator = new Writer(0,true);
-        simulator.write_document(xml);
+        simulator.write_document(xml,opts);
         let writer = new Writer(simulator.bs.length);
         return writer.write_document(xml,opts).u8;
     }
