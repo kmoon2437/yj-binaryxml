@@ -9,9 +9,6 @@ function is_range(num,min,max){
 // 헤더 부분의 바이트 길이
 const HEADER_BYTES = Consts.KASUARI.length + 4;
 
-// 사용 가능한 압축 알고리즘 목록
-const AVAILABLE_COMPRESS_ALGOS = Object.values(Consts.compress);
-
 module.exports = class Writer{
     constructor(initial_length,simulate = false){
         this.bs = simulate
@@ -23,6 +20,7 @@ module.exports = class Writer{
         opts = Object.assign({
             compress:Consts.compress.RAW
         },opts);
+        if(typeof opts.compress == 'string') opts.compress = Consts.compress[opts.compress.toUpperCase()] || Consts.compress.RAW;
         
         // 일단 내용 먼저
         this.write_declaration(xml.declaration.attributes);

@@ -1,5 +1,4 @@
 const xmljs = require('xml-js');
-const Consts = require('./Consts');
 const Reader = require('./Reader');
 const Writer = require('./Writer');
 
