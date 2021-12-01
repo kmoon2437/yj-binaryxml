@@ -1,6 +1,6 @@
 {
   "name": "zxe-binaryxml",
-  "version": "0.2.2-arisa0",
+  "version": "0.3.0-arisa0",
   "description": "Binary XML file converter(It's my own format.)",
   "main": "index.js",
   "scripts": {
