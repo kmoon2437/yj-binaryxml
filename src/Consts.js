@@ -32,7 +32,7 @@ module.exports = {
     },
 
     // value의 타입
-    value_types:{
+    valueTypes:{
         NULL:0x00, // null
         TEXT:0x01, // 텍스트
         BINARY_DATA:0x02, // binary data(Uint8Array)
@@ -59,7 +59,7 @@ module.exports = {
     },
 
     // 저 timestamp 타입의 시간 해상도
-    time_resolution:{
+    timeResolution:{
         SECONDS:0x00, // 초
         MILLISECONDS:0x01, // 밀리초
         MICROSECONDS:0x02, // 마이크로초
