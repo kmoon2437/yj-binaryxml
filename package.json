@@ -1,7 +1,7 @@
 {
-  "name": "zxe-binaryxml",
+  "name": "yj-binaryxml",
   "version": "1.0.0-arisa0",
-  "description": "Binary XML file converter(It's my own format.)",
+  "description": "Binary XML file converter(This is my own format.)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,15 +12,13 @@
     "byte-data-stream": "^1.0.0-rokka0",
     "xml-js": "^1.6.11"
   },
-  "directories": {
-    "test": "test"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kmoon2437/zxe-binaryxml.git"
+    "url": "git+https://github.com/kmoon2437/yj-binaryxml.git"
   },
   "bugs": {
-    "url": "https://github.com/kmoon2437/zxe-binaryxml/issues"
+    "url": "https://github.com/kmoon2437/yj-binaryxml/issues"
   },
-  "homepage": "https://github.com/kmoon2437/zxe-binaryxml#readme"
+  "homepage": "https://github.com/kmoon2437/yj-binaryxml#readme",
+  "devDependencies": {}
 }
