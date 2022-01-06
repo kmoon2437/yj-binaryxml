@@ -1,6 +1,6 @@
 {
   "name": "yj-binaryxml",
-  "version": "1.0.0-arisa0",
+  "version": "1.0.1-arisa0",
   "description": "Binary XML file converter(This is my own format.)",
   "main": "index.js",
   "scripts": {
