@@ -1,10 +1,10 @@
 module.exports = {
-    // 헤더 시그니처(매직넘버). 카스아리는 찐이다
-    KASUARI:Uint8Array.from([0x6b,0x61,0x73,0x75,0x61,0x72,0x69,0x5f]),
+    MAGIC:Uint8Array.from([0x59,0x75,0x6e,0x6a,0x69,0x6e,0x54,0x56]),
 
     // 파일 버젼
     // 파일에 지정된 값이 여깄는 값보다 크면 파일 읽기를 거부
-    VERSION:0x0000, // 부호없는 16비트 정수(0~65535,0x0000~0xffff)
+    MAJOR_VERSION:0x0001, // 부호없는 16비트 정수(0~65535,0x0000~0xffff)
+    MINOR_VERSION:0x0000, // 부호없는 16비트 정수(0~65535,0x0000~0xffff)
 
     // xml declaration
     START_OF_DECLARATION:0x00,

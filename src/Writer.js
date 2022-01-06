@@ -6,8 +6,8 @@ function isRange(num,min,max){
     return min <= num && num <= max;
 }
 
-// 헤더 부분의 바이트 길이
-const HEADER_BYTES = Consts.KASUARI.length + 4;
+// 헤더 부분의 바이트 길이(magic 8바이트 + 버젼 8바이트)
+const HEADER_BYTES = Consts.MAGIC.length + 8;
 
 module.exports = class Writer{
     constructor(initialLength,simulate = false){
@@ -47,10 +47,11 @@ module.exports = class Writer{
         let bs = new ByteStream(new ArrayBuffer(HEADER_BYTES + body.byteLength));
 
         // signature bytes
-        bs.writeBytes(Consts.KASUARI);
+        bs.writeBytes(Consts.MAGIC);
 
         // version
-        bs.writeUint16(Consts.VERSION);
+        bs.writeUint16(Consts.MAJOR_VERSION);
+        bs.writeUint16(Consts.MINOR_VERSION);
 
         // 압축알고리즘 종류
         bs.writeUint16(compress);

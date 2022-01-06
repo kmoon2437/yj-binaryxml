@@ -2,7 +2,7 @@
 null: 말그대로 null
 텍스트 {
     길이: big-endian의 부호 없는 가변 길이 정수
-    내용: 대부분 utf-8 인코딩이다
+    내용: utf-8 인코딩이어야 한다
 }
 binary data {
     길이: big-endian의 부호 없는 가변 길이 정수
@@ -30,7 +30,7 @@ array: 말그대로 배열. 배열을 포함해 저기 있는 모든 타입을 �
 
 파일 구조
 
-signature: 8바이트. 카스아리는 찐이다
+magic: 8바이트
 file format version: 2바이트. 대부분 00 00이다
 declaration: <?xml ~~~ ?>의 내용 {
     attributes: 속성 리스트 {

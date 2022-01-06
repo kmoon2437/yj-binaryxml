@@ -37,9 +37,9 @@ module.exports = class Reader{
     
     verifySignature(){
         // 시그니처 안맞으면 퉤
-        let sign = this.bs.readBytes(Consts.KASUARI.length);
-        if(!Consts.KASUARI.every((e,i,a) => sign[i] == a[i])){
-            throw new TypeError('bad signature bytes. I want kasuari');
+        let sign = this.bs.readBytes(Consts.MAGIC.length);
+        if(!Consts.MAGIC.every((e,i,a) => sign[i] == a[i])){
+            throw new TypeError('bad signature bytes. Please subscribe my youtube channel');
         }
     }
     
@@ -52,11 +52,12 @@ module.exports = class Reader{
     }
     
     verifyVersion(doc){
-        doc.bxmlVersion = this.bs.readUint16();
+        doc.bxmlMajorVersion = this.bs.readUint16();
+        doc.bxmlMinorVersion = this.bs.readUint16();
         // 난 왜 저걸 저렇게 입력했지?????????
         //                   vvvv
         //if(doc.bxmlVersion >= Consts.VERSION) throw new Error("....");
-        if(doc.bxmlVersion > Consts.VERSION) throw new Error("Outdated parser (please update the package.)");
+        if(doc.bxmlMajorVersion > Consts.VERSION) throw new Error("Outdated parser (please update the package.)");
     }
 
     readCompress(){
